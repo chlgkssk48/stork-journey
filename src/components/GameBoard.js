@@ -21,7 +21,7 @@ const app = new PIXI.Application({
   width: RENDERERS_VIEW_WIDTH,
   height: RENDERERS_VIEW_HEIGHT,
   antialias: true,
-  transparent: true,
+  backgroundAlpha: 0,
 });
 
 export default function GameBoard({ backgroundCondition }) {
