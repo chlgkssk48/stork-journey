@@ -1,5 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 
+import GameBoard from "./components/GameBoard";
+
 const GlobalStyle = createGlobalStyle`
   html,
   body {
@@ -18,6 +20,7 @@ export default function App() {
   return (
     <>
       <GlobalStyle />
+      <GameBoard />
     </>
   );
 }
