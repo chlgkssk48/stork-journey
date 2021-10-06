@@ -3,6 +3,8 @@ import * as PIXI from "pixi.js";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
+import BoardContent from "./BoardContent";
+
 import createBackground from "../pixi/createBackground";
 
 import {
@@ -50,12 +52,12 @@ export default function GameBoard({ backgroundCondition }) {
     });
 
     app.stage.addChild(background);
-
-    return () => canvasRef.current = null;
   }, [source, scale, variant]);
 
   return (
-    <CanvasContainer ref={canvasRef} />
+    <CanvasContainer ref={canvasRef}>
+      <BoardContent />
+    </CanvasContainer>
   );
 }
 
