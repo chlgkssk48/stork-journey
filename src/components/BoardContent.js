@@ -26,7 +26,15 @@ export default function BoardContent() {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
   const [storkName, setStorkName] = useState("");
 
-  const handleWaitingStatus = () => {
+  const handleKeyPress= (key) => {
+    if (key !== "Enter") {
+      return;
+    }
+
+    handleButtonClick();
+  };
+
+  const handleButtonClick = () => {
     if (storkName === "") {
       return;
     }
@@ -43,10 +51,11 @@ export default function BoardContent() {
         <>
           <NameInput
             onType={setStorkName}
+            onKeyPress={handleKeyPress}
           />
           <Button
             buttonName={READY}
-            onClick={handleWaitingStatus}
+            onClick={handleButtonClick}
           />
         </>
       )}

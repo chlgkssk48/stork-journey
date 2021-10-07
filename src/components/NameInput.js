@@ -12,7 +12,7 @@ const StyledInput = styled.input`
   text-align: center;
 
   &:focus {
-    border: 2px solid #729fe8;
+    border: 2px solid #8cb0cf;
     box-shadow: 8px 8px 8px #bfbfbf;
   }
 
@@ -21,18 +21,21 @@ const StyledInput = styled.input`
   }
 `;
 
-export default function NameInput({ onType }) {
-  const handleInputName = ({ target }) => onType(target.value);
+export default function NameInput({ onType, onKeyPress }) {
+  const handleNameInput = ({ target }) => onType(target.value);
+  const handleKeyPress = (key) => onKeyPress(key);
 
   return (
     <StyledInput
       type="text"
       placeholder="황새의 이름을 입력해 주세요!"
-      onChange={handleInputName}
+      onChange={handleNameInput}
+      onKeyPress={(event) => handleKeyPress(event.key)}
     />
   );
 }
 
 NameInput.propTypes = {
   onType: PropTypes.func.isRequired,
+  onKeyPress: PropTypes.func.isRequired,
 };
