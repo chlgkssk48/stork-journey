@@ -12,6 +12,7 @@ import createBackground from "../pixi/createBackground";
 import {
   IS_WAITING,
   IS_READY,
+  IS_PLAYING,
 } from "../constants/gameStatus";
 
 import {
@@ -35,29 +36,25 @@ const ContentContainer = styled.div`
   height: 300px;
 `;
 
+const app = new PIXI.Application({
+  width: SCREEN_WIDTH,
+  height: SCREEN_HEIGHT,
+  antialias: true,
+  backgroundAlpha: 0,
+});
+
+const background = createBackground(
+  MOCKUP_BACKGROUND_SOURCE,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+  MOCKUP_BACKGROUND_SCALE,
+);
+
 export default function BoardContent({ canvasContainer }) {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
   const [storkName, setStorkName] = useState("");
 
   const setup = useCallback(() => {
-    const app = new PIXI.Application({
-      width: SCREEN_WIDTH,
-      height: SCREEN_HEIGHT,
-      antialias: true,
-      backgroundAlpha: 0,
-    });
-
-    const background = createBackground(
-      MOCKUP_BACKGROUND_SOURCE,
-      SCREEN_WIDTH,
-      SCREEN_HEIGHT,
-      MOCKUP_BACKGROUND_SCALE,
-    );
-
-    app.ticker.add(() => {
-      background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
-    });
-
     app.stage.addChild(background);
 
     canvasContainer.current.appendChild(app.view);
@@ -66,6 +63,14 @@ export default function BoardContent({ canvasContainer }) {
   useEffect(() => {
     setup();
   }, [setup]);
+
+  useEffect(() => {
+    if (gameStatus === IS_PLAYING) {
+      app.ticker.add(() => {
+        background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
+      });
+    }
+  }, [gameStatus]);
 
   const handleKeyPress = (key) => {
     if (key !== "Enter") {
@@ -106,6 +111,6 @@ export default function BoardContent({ canvasContainer }) {
 
 BoardContent.propTypes = {
   canvasContainer: PropTypes.shape({
-    current: PropTypes.element,
+    current: PropTypes.object,
   }),
 };
