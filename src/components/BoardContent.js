@@ -10,6 +10,11 @@ import Button from "./common/Button";
 import createBackground from "../pixi/createBackground";
 
 import {
+  createStork,
+  animateStork,
+} from "../pixi/stork";
+
+import {
   IS_WAITING,
   IS_READY,
   IS_PLAYING,
@@ -65,6 +70,13 @@ export default function BoardContent({ canvasContainer }) {
       return;
     }
 
+    const stork = createStork();
+
+    stork.position.x = app.screen.width * 0.37;
+    stork.position.y = app.screen.height * 0.48;
+
+    app.stage.addChild(stork);
+
     localStorage.setItem("storkName", storkName);
 
     setGameStatus(IS_READY);
@@ -94,6 +106,8 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (gameStatus === IS_PLAYING) {
+      animateStork();
+
       app.ticker.add(() => {
         background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
       });
