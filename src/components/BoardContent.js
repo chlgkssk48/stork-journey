@@ -60,27 +60,7 @@ export default function BoardContent({ canvasContainer }) {
     canvasContainer.current.appendChild(app.view);
   }, [canvasContainer]);
 
-  useEffect(() => {
-    setup();
-  }, [setup]);
-
-  useEffect(() => {
-    if (gameStatus === IS_PLAYING) {
-      app.ticker.add(() => {
-        background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
-      });
-    }
-  }, [gameStatus]);
-
-  const handleKeyPress = (key) => {
-    if (key !== "Enter") {
-      return;
-    }
-
-    handleButtonClick();
-  };
-
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     if (storkName === "") {
       return;
     }
@@ -88,7 +68,37 @@ export default function BoardContent({ canvasContainer }) {
     localStorage.setItem("storkName", storkName);
 
     setGameStatus(IS_READY);
-  };
+  }, [storkName]);
+
+  const handleKeyUp = useCallback(({ key }) => {
+    if (key === "Enter" && gameStatus === IS_WAITING) {
+      handleButtonClick();
+
+      return;
+    }
+
+    if (key === " " && gameStatus === IS_READY) {
+      setGameStatus(IS_PLAYING);
+    }
+  }, [handleButtonClick, gameStatus]);
+
+  useEffect(() => {
+    setup();
+  }, [setup]);
+
+  useEffect(() => {
+    if (gameStatus === IS_READY) {
+      document.body.addEventListener("keyup", handleKeyUp);
+
+      return () => document.body.removeEventListener("keyup", handleKeyUp);
+    }
+
+    if (gameStatus === IS_PLAYING) {
+      app.ticker.add(() => {
+        background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
+      });
+    }
+  }, [gameStatus, handleKeyUp]);
 
   return (
     <ContentContainer>
@@ -97,7 +107,7 @@ export default function BoardContent({ canvasContainer }) {
         <>
           <NameInput
             onType={setStorkName}
-            onKeyPress={handleKeyPress}
+            onKeyUp={handleKeyUp}
           />
           <Button
             buttonName={READY}
