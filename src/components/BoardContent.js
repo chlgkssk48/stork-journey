@@ -32,6 +32,10 @@ import { MOCKUP_BACKGROUND_SOURCE } from "../constants/sources";
 import { READY } from "../constants/buttonNames";
 
 const ContentContainer = styled.div`
+  position: absolute;
+`;
+
+const PreparationContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -39,6 +43,11 @@ const ContentContainer = styled.div`
   position: absolute;
   width: 1100px;
   height: 300px;
+`;
+
+const DistanceContent = styled.p`
+  padding-left: 40px;
+  font-size: 40px;
 `;
 
 const app = new PIXI.Application({
@@ -58,6 +67,7 @@ const background = createBackground(
 export default function BoardContent({ canvasContainer }) {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
   const [storkName, setStorkName] = useState("");
+  const [distance, setDistance] = useState(0);
 
   const setup = useCallback(() => {
     app.stage.addChild(background);
@@ -110,24 +120,34 @@ export default function BoardContent({ canvasContainer }) {
 
       app.ticker.add(() => {
         background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
+
+        if (Math.abs(background.tilePosition.x) % 300 === 0) {
+          setDistance((distance) => distance + 1);
+        }
       });
     }
   }, [gameStatus, handleKeyUp]);
 
   return (
     <ContentContainer>
-      <Message gameStatus={gameStatus} />
-      {gameStatus === IS_WAITING && (
-        <>
-          <NameInput
-            onType={setStorkName}
-            onKeyUp={handleKeyUp}
-          />
-          <Button
-            buttonName={READY}
-            onClick={handleButtonClick}
-          />
-        </>
+      {gameStatus === IS_PLAYING ? (
+        <DistanceContent>{distance} m</DistanceContent>
+      ) : (
+        <PreparationContent>
+          <Message gameStatus={gameStatus} />
+          {gameStatus === IS_WAITING && (
+            <>
+              <NameInput
+                onType={setStorkName}
+                onKeyUp={handleKeyUp}
+              />
+              <Button
+                buttonName={READY}
+                onClick={handleButtonClick}
+              />
+            </>
+          )}
+        </PreparationContent>
       )}
     </ContentContainer>
   );
