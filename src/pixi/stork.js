@@ -24,7 +24,7 @@ const createStork = () => {
       .lineStyle(lineStyle)
       .moveTo(300, 0)
       .beginFill(0xfffae6)
-      .arc(190, 0, 25, 0, Math.PI * 2)
+      .arc(190, 0, 23, 0, Math.PI * 2)
       .moveTo(187, 0)
       .arc(187, 0, 1, 0, Math.PI * 2)
   );
@@ -33,29 +33,31 @@ const createStork = () => {
     new PIXI.Graphics()
       .lineStyle(lineStyle)
       .moveTo(190, 0)
-      .lineTo(190, 110)
+      .lineTo(190, 50)
       .beginFill(0xfffae6)
-      .bezierCurveTo(45, 100, 35, 110, 55, 130)
-      .bezierCurveTo(45, 130, 35, 140, 60, 150)
-      .bezierCurveTo(50, 150, 40, 160, 65, 170)
-      .bezierCurveTo(60, 175, 55, 180, 90, 200)
-      .bezierCurveTo(110, 210, 190, 220, 190, 110)
+      .bezierCurveTo(190, 80, 187, 95, 185, 110)
+      .bezierCurveTo(165, 140, 135, 130, 120, 133)
+      .bezierCurveTo(100, 134, 80, 130, 60, 150)
+      .bezierCurveTo(50, 158, 55, 158, 65, 163)
+      .bezierCurveTo(55, 170, 50, 175, 80, 190)
+      .bezierCurveTo(110, 200, 190, 225, 190, 50)
   );
 
   wing.addChild(
     new PIXI.Graphics()
       .lineStyle(lineStyle)
-      .moveTo(160, 140)
+      .moveTo(155, 145)
       .beginFill(0xfffae6)
-      .bezierCurveTo(90, 130, 80, 140, 100, 150)
-      .bezierCurveTo(90, 150, 80, 155, 100, 170)
-      .bezierCurveTo(105, 170, 120, 200, 160, 140)
+      .bezierCurveTo(140, 155, 120, 150, 105, 153)
+      .bezierCurveTo(95, 157, 90, 161, 100, 167)
+      .bezierCurveTo(96, 170, 92, 175, 105, 179)
+      .bezierCurveTo(115, 182, 130, 184, 155, 145)
   );
 
   leftLeg.addChild(
     new PIXI.Graphics()
       .lineStyle(lineStyle)
-      .moveTo(100, 180)
+      .moveTo(100, 170)
       .lineTo(100, 300)
       .lineTo(125, 300)
   );
@@ -63,7 +65,7 @@ const createStork = () => {
   rightLeg.addChild(
     new PIXI.Graphics()
       .lineStyle(lineStyle)
-      .moveTo(145, 180)
+      .moveTo(145, 170)
       .lineTo(145, 300)
       .lineTo(170, 300)
   );
@@ -78,16 +80,16 @@ const animateStork = () => {
   leftLegRadian += 0.13;
   rightLegRadian += 0.13;
 
-  wing.pivot.set(165, 130);
-  wing.position.set(165, 130);
+  wing.pivot.set(155, 145);
+  wing.position.set(155, 145);
   wing.rotation += Math.sin(wingRadian) * 0.02;
 
-  leftLeg.pivot.set(100, 180);
-  leftLeg.position.set(122.5 + Math.cos(leftLegRadian) * 22, 180);
+  leftLeg.pivot.set(100, 170);
+  leftLeg.position.set(122.5 + Math.cos(leftLegRadian) * 22, 170);
   leftLeg.rotation += Math.cos(leftLegRadian) / 20;
 
-  rightLeg.pivot.set(145, 180);
-  rightLeg.position.set(122.5 + Math.cos(rightLegRadian) * 22, 180);
+  rightLeg.pivot.set(145, 170);
+  rightLeg.position.set(122.5 + Math.cos(rightLegRadian) * 22, 170);
   rightLeg.rotation += Math.cos(rightLegRadian) / 20;
 
   requestAnimationFrame(animateStork);
