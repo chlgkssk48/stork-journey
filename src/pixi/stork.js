@@ -1,24 +1,24 @@
 import * as PIXI from "pixi.js";
 
-const stork = new PIXI.Container();
+const lineStyle = {
+  width: 7,
+  color: 0x000000,
+  cap: "round",
+  join: "round",
+};
+
 const head = new PIXI.Container();
 const body = new PIXI.Container();
 const wing = new PIXI.Container();
 const leftLeg = new PIXI.Container();
 const rightLeg = new PIXI.Container();
+const stork = new PIXI.Container();
 
 let wingRadian = 0;
 let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
 
 const createStork = () => {
-  const lineStyle = {
-    width: 7,
-    color: 0x000000,
-    cap: "round",
-    join: "round",
-  };
-
   head.addChild(
     new PIXI.Graphics()
       .lineStyle(lineStyle)
