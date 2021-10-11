@@ -1,5 +1,10 @@
 import * as PIXI from "pixi.js";
 
+import {
+  LEFT,
+  RIGHT,
+} from "../constants/directions";
+
 const lineStyle = {
   width: 6,
   color: 0x000000,
@@ -13,10 +18,14 @@ const body = new PIXI.Container();
 const wing = new PIXI.Container();
 const head = new PIXI.Container();
 const stork = new PIXI.Container();
+const legs = new PIXI.Container();
+const upperBody = new PIXI.Container();
 
 let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
 let wingRadian = 0;
+
+let tiltingDirection = RIGHT;
 
 const createStork = () => {
   leftLeg.addChild(
@@ -96,6 +105,36 @@ const animateStork = () => {
 
   head.pivot.set(190, 0);
   head.position.set(190, 0);
+
+  legs.pivot.set(120, 225);
+  legs.position.set(120, 225);
+
+  upperBody.pivot.set(120, 197);
+  upperBody.position.set(120, 197);
+
+  if (tiltingDirection === RIGHT && upperBody.rotation < 1.6) {
+    head.rotation -= 0.007;
+    legs.rotation += 0.003;
+    upperBody.rotation += 0.01;
+  }
+
+  if (tiltingDirection === LEFT && upperBody.rotation > -2.3) {
+    head.rotation += 0.007;
+    legs.rotation -= 0.003;
+    upperBody.rotation -= 0.01;
+  }
+
+  if (upperBody.rotation >= 1.6) {
+    tiltingDirection = LEFT;
+  }
+
+  if (upperBody.rotation <= -2.3) {
+    tiltingDirection = RIGHT;
+  }
+
+  legs.addChild(leftLeg, rightLeg);
+  upperBody.addChild(body, wing, head);
+  stork.addChild(legs, upperBody);
 
   requestAnimationFrame(animateStork);
 };
