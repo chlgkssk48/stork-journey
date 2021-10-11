@@ -5,6 +5,8 @@ import {
   RIGHT,
 } from "../constants/directions";
 
+import { IS_OVER } from "../constants/gameStatus";
+
 const lineStyle = {
   width: 6,
   color: 0x000000,
@@ -86,7 +88,7 @@ const createStork = () => {
   return stork;
 };
 
-const animateStork = () => {
+const animateStork = (setGameStatus) => {
   leftLegRadian += 0.13;
   rightLegRadian += 0.13;
   wingRadian += 0.25;
@@ -125,18 +127,32 @@ const animateStork = () => {
   }
 
   if (upperBody.rotation >= 1.6) {
-    tiltingDirection = LEFT;
+    head.rotation = -1.6;
+    head.position.set(175, 10);
+
+    legs.rotation = 1.6;
+    legs.position.set(90, 230);
+
+    upperBody.position.set(120, 230);
+
+    setGameStatus(IS_OVER);
   }
 
   if (upperBody.rotation <= -2.3) {
-    tiltingDirection = RIGHT;
+    head.rotation = -0.6;
+    head.position.set(180, 10);
+
+    legs.position.set(150, 230);
+    legs.rotation = -1.8;
+
+    upperBody.position.set(120, 230);
+
+    setGameStatus(IS_OVER);
   }
 
   legs.addChild(leftLeg, rightLeg);
   upperBody.addChild(body, wing, head);
   stork.addChild(legs, upperBody);
-
-  requestAnimationFrame(animateStork);
 };
 
 export {

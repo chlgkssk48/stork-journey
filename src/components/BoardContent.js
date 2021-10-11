@@ -18,6 +18,7 @@ import {
   IS_WAITING,
   IS_READY,
   IS_PLAYING,
+  IS_OVER,
 } from "../constants/gameStatus";
 
 import {
@@ -116,9 +117,9 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (gameStatus === IS_PLAYING) {
-      animateStork();
-
       app.ticker.add(() => {
+        animateStork(setGameStatus);
+
         background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
 
         if (Math.abs(background.tilePosition.x) % 300 === 0) {
@@ -126,11 +127,15 @@ export default function BoardContent({ canvasContainer }) {
         }
       });
     }
+
+    if (gameStatus === IS_OVER) {
+      app.ticker.stop();
+    }
   }, [gameStatus, handleKeyUp]);
 
   return (
     <ContentContainer>
-      {gameStatus === IS_PLAYING ? (
+      {gameStatus === IS_PLAYING || gameStatus === IS_OVER ? (
         <DistanceContent>{distance} m</DistanceContent>
       ) : (
         <PreparationContent>
