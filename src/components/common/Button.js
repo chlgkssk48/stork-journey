@@ -23,13 +23,14 @@ const StyledButton = styled.button`
   }
 `;
 
-export default function Button({ buttonName, onClick }) {
+export default function Button({ buttonName, onClick, className }) {
   const handleButtonClick = () => onClick();
 
   return (
     <StyledButton
       type="button"
       onClick={handleButtonClick}
+      className={className}
     >
       {buttonName}
     </StyledButton>
@@ -39,4 +40,5 @@ export default function Button({ buttonName, onClick }) {
 Button.propTypes = {
   buttonName: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
