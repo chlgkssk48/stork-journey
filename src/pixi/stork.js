@@ -27,7 +27,16 @@ let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
 let wingRadian = 0;
 
-let tiltingDirection = RIGHT;
+let storkControlStatus = "isUncontrolled";
+
+let animationAmount = 0;
+let animationRadian = 0.003;
+
+let previousArrowDirection = null;
+
+let keyDownCount = 0;
+let controlAmount = 0;
+let controlRadian = 0.03;
 
 const createStork = () => {
   leftLeg.addChild(
@@ -89,6 +98,10 @@ const createStork = () => {
 };
 
 const animateStork = (setGameStatus) => {
+  if (storkControlStatus === "isControlled") {
+    return;
+  }
+
   leftLegRadian += 0.13;
   rightLegRadian += 0.13;
   wingRadian += 0.25;
@@ -114,16 +127,19 @@ const animateStork = (setGameStatus) => {
   upperBody.pivot.set(120, 197);
   upperBody.position.set(120, 197);
 
-  if (tiltingDirection === RIGHT && upperBody.rotation < 1.6) {
-    head.rotation -= 0.007;
-    legs.rotation += 0.003;
-    upperBody.rotation += 0.01;
+  animationAmount += head.getGlobalPosition().y * 0.0000002;
+  animationRadian += Math.pow(animationAmount, 2);
+
+  if (upperBody.rotation >= 0 && upperBody.rotation < 1.6) {
+    head.rotation -= animationRadian * 2;
+    legs.rotation += animationRadian;
+    upperBody.rotation += animationRadian * 3;
   }
 
-  if (tiltingDirection === LEFT && upperBody.rotation > -2.3) {
-    head.rotation += 0.007;
-    legs.rotation -= 0.003;
-    upperBody.rotation -= 0.01;
+  if (upperBody.rotation > -2.3 && upperBody.rotation < 0) {
+    head.rotation += animationRadian * 2;
+    legs.rotation -= animationRadian;
+    upperBody.rotation -= animationRadian * 3;
   }
 
   if (upperBody.rotation >= 1.6) {
@@ -155,7 +171,40 @@ const animateStork = (setGameStatus) => {
   stork.addChild(legs, upperBody);
 };
 
+const controlStork = (arrowDirection) => {
+  if (previousArrowDirection === null) {
+    previousArrowDirection = arrowDirection;
+  }
+
+  if (previousArrowDirection === arrowDirection) {
+    keyDownCount += 1;
+    controlAmount += 0.002 * keyDownCount;
+    controlRadian += controlAmount;
+  } else {
+    previousArrowDirection = arrowDirection;
+    keyDownCount = 0;
+    controlAmount = 0;
+    controlRadian = 0.03;
+  }
+
+  if (arrowDirection === LEFT) {
+    head.rotation += controlRadian * 2;
+    legs.rotation -= controlRadian;
+    upperBody.rotation -= controlRadian * 3;
+  }
+
+  if (arrowDirection === RIGHT) {
+    head.rotation -= controlRadian * 2;
+    legs.rotation += controlRadian;
+    upperBody.rotation += controlRadian * 3;
+  }
+};
+
+const setStorkControlStatus = (status) => storkControlStatus = status;
+
 export {
   createStork,
   animateStork,
+  controlStork,
+  setStorkControlStatus,
 };

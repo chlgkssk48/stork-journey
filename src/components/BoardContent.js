@@ -12,6 +12,8 @@ import createBackground from "../pixi/createBackground";
 import {
   createStork,
   animateStork,
+  controlStork,
+  setStorkControlStatus,
 } from "../pixi/stork";
 
 import {
@@ -28,9 +30,14 @@ import {
   MOCKUP_BACKGROUND_VARIANT,
 } from "../constants/figures";
 
-import { MOCKUP_BACKGROUND_SOURCE } from "../constants/sources";
+import {
+  LEFT,
+  RIGHT,
+} from "../constants/directions";
 
 import { READY } from "../constants/buttonNames";
+
+import { MOCKUP_BACKGROUND_SOURCE } from "../constants/sources";
 
 const ContentContainer = styled.div`
   position: absolute;
@@ -103,7 +110,25 @@ export default function BoardContent({ canvasContainer }) {
     if (key === " " && gameStatus === IS_READY) {
       setGameStatus(IS_PLAYING);
     }
+
+    if ((key === "ArrowLeft" || key === "ArrowRight") && gameStatus === IS_PLAYING) {
+      setStorkControlStatus("isUncontrolled");
+    }
   }, [handleButtonClick, gameStatus]);
+
+  const handleKeyDown = useCallback(({ key }) => {
+    if (key === "ArrowLeft") {
+      setStorkControlStatus("isControlled");
+
+      app.ticker.addOnce(() => controlStork(LEFT));
+    }
+
+    if (key === "ArrowRight") {
+      setStorkControlStatus("isControlled");
+
+      app.ticker.addOnce(() => controlStork(RIGHT));
+    }
+  }, []);
 
   useEffect(() => {
     setup();
@@ -117,6 +142,9 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (gameStatus === IS_PLAYING) {
+      document.body.addEventListener("keydown", handleKeyDown);
+      document.body.addEventListener("keyup", handleKeyUp);
+
       app.ticker.add(() => {
         animateStork(setGameStatus);
 
@@ -126,12 +154,17 @@ export default function BoardContent({ canvasContainer }) {
           setDistance((distance) => distance + 1);
         }
       });
+
+      return () => {
+        document.body.removeEventListener("keydown", handleKeyDown);
+        document.body.removeEventListener("keyup", handleKeyUp);
+      };
     }
 
     if (gameStatus === IS_OVER) {
       app.ticker.stop();
     }
-  }, [gameStatus, handleKeyUp]);
+  }, [gameStatus, handleKeyUp, handleKeyDown]);
 
   return (
     <ContentContainer>
