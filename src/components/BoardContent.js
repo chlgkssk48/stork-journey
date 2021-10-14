@@ -187,13 +187,26 @@ export default function BoardContent({ canvasContainer }) {
       return;
     }
 
+    app.stage.removeChildAt(1);
+
+    app.renderer.render(app.stage);
+
+    restoreStork();
+
+    if (name === TRY_AGAIN) {
+      const newStork = createStork();
+
+      newStork.position.x = app.screen.width * 0.37;
+      newStork.position.y = app.screen.height * 0.48;
+
+      app.stage.addChild(newStork);
+
+      setGameStatus(IS_READY);
+
+      return;
+    }
+
     if (name === QUIT) {
-      app.stage.removeChildAt(1);
-
-      app.renderer.render(app.stage);
-
-      restoreStork();
-
       setGameStatus(IS_WAITING);
     }
   }, [storkName]);
@@ -315,6 +328,7 @@ export default function BoardContent({ canvasContainer }) {
           <ButtonBox>
             <StyledButton
               buttonName={TRY_AGAIN}
+              onClick={handleButtonClick}
             />
             <StyledButton
               buttonName={QUIT}
