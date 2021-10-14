@@ -14,14 +14,14 @@ const lineStyle = {
   join: "round",
 };
 
-const leftLeg = new PIXI.Container();
-const rightLeg = new PIXI.Container();
-const body = new PIXI.Container();
-const wing = new PIXI.Container();
-const head = new PIXI.Container();
-const stork = new PIXI.Container();
-const legs = new PIXI.Container();
-const upperBody = new PIXI.Container();
+let leftLeg = new PIXI.Container();
+let rightLeg = new PIXI.Container();
+let body = new PIXI.Container();
+let wing = new PIXI.Container();
+let head = new PIXI.Container();
+let legs = new PIXI.Container();
+let upperBody = new PIXI.Container();
+let stork = new PIXI.Container();
 
 let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
@@ -200,11 +200,36 @@ const controlStork = (arrowDirection) => {
   }
 };
 
+const restoreStork = () => {
+  leftLeg = new PIXI.Container();
+  rightLeg = new PIXI.Container();
+  body = new PIXI.Container();
+  wing = new PIXI.Container();
+  head = new PIXI.Container();
+  legs = new PIXI.Container();
+  upperBody = new PIXI.Container();
+  stork = new PIXI.Container();
+
+  leftLegRadian = 0;
+  rightLegRadian = Math.PI;
+  wingRadian = 0;
+
+  animationAmount = 0;
+  animationRadian = 0.003;
+
+  previousArrowDirection = null;
+
+  keyDownCount = 0;
+  controlAmount = 0;
+  controlRadian = 0.03;
+};
+
 const setStorkControlStatus = (status) => storkControlStatus = status;
 
 export {
   createStork,
   animateStork,
   controlStork,
+  restoreStork,
   setStorkControlStatus,
 };

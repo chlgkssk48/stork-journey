@@ -24,11 +24,12 @@ const StyledButton = styled.button`
 `;
 
 export default function Button({ buttonName, onClick, className }) {
-  const handleButtonClick = () => onClick();
+  const handleButtonClick = ({ target }) => onClick(target);
 
   return (
     <StyledButton
       type="button"
+      name={buttonName}
       onClick={handleButtonClick}
       className={className}
     >

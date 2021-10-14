@@ -16,6 +16,7 @@ import {
   createStork,
   animateStork,
   controlStork,
+  restoreStork,
   setStorkControlStatus,
 } from "../pixi/stork";
 
@@ -140,31 +141,61 @@ const getRankingListSortedByDistance = async () => {
 
 export default function BoardContent({ canvasContainer }) {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
-  const [storkName, setStorkName] = useState("");
-  const [distance, setDistance] = useState(0);
+  const [storkName, setStorkName] = useState(null);
+  const [distance, setDistance] = useState(null);
   const [rankingList, setRankingList] = useState(null);
+
+  const update = () => {
+    animateStork(setGameStatus);
+
+    background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
+
+    if (Math.abs(background.tilePosition.x) % 300 === 0) {
+      setDistance((distance) => distance + 1);
+    }
+  };
 
   const setup = useCallback(() => {
     app.stage.addChild(background);
 
     canvasContainer.current.appendChild(app.view);
+
+    setTimeout(() => {
+      app.ticker.add(update);
+
+      app.ticker.stop();
+    }, 1000);
   }, [canvasContainer]);
 
-  const handleButtonClick = useCallback(() => {
-    if (storkName === "") {
+  const handleButtonClick = useCallback(({ name }) => {
+    if (name === READY) {
+      if (storkName === "") {
+        return;
+      }
+
+      const stork = createStork();
+
+      stork.position.x = app.screen.width * 0.37;
+      stork.position.y = app.screen.height * 0.48;
+
+      app.stage.addChild(stork);
+
+      localStorage.setItem("storkName", storkName);
+
+      setGameStatus(IS_READY);
+
       return;
     }
 
-    const stork = createStork();
+    if (name === QUIT) {
+      app.stage.removeChildAt(1);
 
-    stork.position.x = app.screen.width * 0.37;
-    stork.position.y = app.screen.height * 0.48;
+      app.renderer.render(app.stage);
 
-    app.stage.addChild(stork);
+      restoreStork();
 
-    localStorage.setItem("storkName", storkName);
-
-    setGameStatus(IS_READY);
+      setGameStatus(IS_WAITING);
+    }
   }, [storkName]);
 
   const handleKeyUp = useCallback(({ key }) => {
@@ -204,8 +235,14 @@ export default function BoardContent({ canvasContainer }) {
   }, [setup]);
 
   useEffect(() => {
+    if (gameStatus === IS_WAITING) {
+      setDistance(0);
+    }
+
     if (gameStatus === IS_READY) {
       document.body.addEventListener("keyup", handleKeyUp);
+
+      app.renderer.render(app.stage);
 
       return () => document.body.removeEventListener("keyup", handleKeyUp);
     }
@@ -214,15 +251,7 @@ export default function BoardContent({ canvasContainer }) {
       document.body.addEventListener("keydown", handleKeyDown);
       document.body.addEventListener("keyup", handleKeyUp);
 
-      app.ticker.add(() => {
-        animateStork(setGameStatus);
-
-        background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
-
-        if (Math.abs(background.tilePosition.x) % 300 === 0) {
-          setDistance((distance) => distance + 1);
-        }
-      });
+      app.ticker.start();
 
       return () => {
         document.body.removeEventListener("keydown", handleKeyDown);
@@ -289,6 +318,7 @@ export default function BoardContent({ canvasContainer }) {
             />
             <StyledButton
               buttonName={QUIT}
+              onClick={handleButtonClick}
             />
           </ButtonBox>
         </>
