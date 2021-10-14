@@ -169,7 +169,9 @@ export default function BoardContent({ canvasContainer }) {
 
   const handleKeyUp = useCallback(({ key }) => {
     if (key === "Enter" && gameStatus === IS_WAITING) {
-      handleButtonClick();
+      const readyButton = document.getElementsByClassName(READY)[0];
+
+      readyButton.click();
 
       return;
     }
@@ -181,7 +183,7 @@ export default function BoardContent({ canvasContainer }) {
     if ((key === "ArrowLeft" || key === "ArrowRight") && gameStatus === IS_PLAYING) {
       setStorkControlStatus("isUncontrolled");
     }
-  }, [handleButtonClick, gameStatus]);
+  }, [gameStatus]);
 
   const handleKeyDown = useCallback(({ key }) => {
     if (key === "ArrowLeft") {
@@ -253,6 +255,7 @@ export default function BoardContent({ canvasContainer }) {
           <Button
             buttonName={READY}
             onClick={handleButtonClick}
+            className={READY}
           />
         </PreparationContent>
       )}
