@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import * as PIXI from "pixi.js";
+import { getDatabase, update, get, push, child, ref } from "firebase/database";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -8,6 +9,8 @@ import NameInput from "./NameInput";
 import Button from "./common/Button";
 
 import createBackground from "../pixi/createBackground";
+
+import firebaseApp from "../config/firebase";
 
 import {
   createStork,
@@ -61,9 +64,13 @@ const RankingBox = styled.ol`
   left: 390px;
   top: 25px;
   width: 280px;
-  height: 200px;
+  height: 150px;
+  padding-left: 0px;
   border: 2px solid #8f8f8f;
   border-radius: 5px;
+  text-align: center;
+  list-style-type: none;
+  overflow: scroll;
 `;
 
 const ButtonBox = styled.div`
@@ -78,6 +85,11 @@ const Distance = styled.p`
   margin-top: 40px;
   padding-left: ${({ gameStatus }) => gameStatus === IS_PLAYING ? "45px" : "50px"};
   font-size: ${({ gameStatus }) => gameStatus === IS_PLAYING ? "40px" : "60px"};
+`;
+
+const List = styled.li`
+  font-size: 20px;
+  line-height: 30px;
 `;
 
 const StyledButton = styled(Button)`
@@ -99,10 +111,38 @@ const background = createBackground(
   MOCKUP_BACKGROUND_SCALE,
 );
 
+const writeStorkData = async (name, distance) => {
+  const database = getDatabase(firebaseApp, process.env.REACT_APP_REALTIME_DATABASE_URL);
+
+  const storkData = {
+    name,
+    distance,
+  };
+
+  const { key } = await push(child(ref(database), "stork"));
+
+  update(ref(database), {
+    [`stork/${key}`]: storkData,
+  });
+};
+
+const getRankingListSortedByDistance = async () => {
+  const database = getDatabase(firebaseApp, process.env.REACT_APP_REALTIME_DATABASE_URL);
+  const snapshot = await get(child(ref(database), "stork"));
+  const storkDatas = snapshot.val();
+
+  const sortedList = Object.values(storkDatas).sort((a, b) => b.distance - a.distance);
+
+  const topRankingList = sortedList.slice(0, 5);
+
+  return topRankingList;
+};
+
 export default function BoardContent({ canvasContainer }) {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
   const [storkName, setStorkName] = useState("");
   const [distance, setDistance] = useState(0);
+  const [rankingList, setRankingList] = useState(null);
 
   const setup = useCallback(() => {
     app.stage.addChild(background);
@@ -189,9 +229,17 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (gameStatus === IS_OVER) {
+      writeStorkData(storkName, distance);
+
+      (async () => {
+        const rankingList = await getRankingListSortedByDistance();
+
+        setRankingList(rankingList);
+      })();
+
       app.ticker.stop();
     }
-  }, [gameStatus, handleKeyUp, handleKeyDown]);
+  }, [gameStatus, handleKeyUp, handleKeyDown, storkName, distance]);
 
   return (
     <ContentContainer>
@@ -228,7 +276,9 @@ export default function BoardContent({ canvasContainer }) {
             {distance} m
           </Distance>
           <RankingBox>
-            <></>
+            {rankingList && rankingList.map((data, index) => (
+              <List key={index}>{`${index + 1}위 : ${data.name}, ${data.distance} m`}</List>
+            ))}
           </RankingBox>
           <ButtonBox>
             <StyledButton
