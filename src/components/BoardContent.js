@@ -65,13 +65,14 @@ const RankingBox = styled.ol`
   left: 390px;
   top: 25px;
   width: 280px;
-  height: 150px;
-  padding-left: 0px;
+  height: 175px;
+  padding-left: 15px;
   border: 2px solid #8f8f8f;
   border-radius: 5px;
-  text-align: center;
   list-style-type: none;
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
 `;
 
 const ButtonBox = styled.div`
@@ -90,7 +91,7 @@ const Distance = styled.p`
 
 const List = styled.li`
   font-size: 20px;
-  line-height: 30px;
+  line-height: 33px;
 `;
 
 const StyledButton = styled(Button)`
