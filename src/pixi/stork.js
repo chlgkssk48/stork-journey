@@ -27,8 +27,6 @@ let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
 let wingRadian = 0;
 
-let storkControlStatus = "isUncontrolled";
-
 let animationAmount = 0;
 let animationRadian = 0.003;
 
@@ -98,10 +96,6 @@ const createStork = () => {
 };
 
 const animateStork = (setGameStatus) => {
-  if (storkControlStatus === "isControlled") {
-    return;
-  }
-
   leftLegRadian += 0.13;
   rightLegRadian += 0.13;
   wingRadian += 0.25;
@@ -224,12 +218,9 @@ const restoreStork = () => {
   controlRadian = 0.03;
 };
 
-const setStorkControlStatus = (status) => storkControlStatus = status;
-
 export {
   createStork,
   animateStork,
   controlStork,
   restoreStork,
-  setStorkControlStatus,
 };

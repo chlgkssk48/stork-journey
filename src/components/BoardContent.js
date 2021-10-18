@@ -17,7 +17,6 @@ import {
   animateStork,
   controlStork,
   restoreStork,
-  setStorkControlStatus,
 } from "../pixi/stork";
 
 import {
@@ -221,22 +220,16 @@ export default function BoardContent({ canvasContainer }) {
     if (key === " " && gameStatus === IS_READY) {
       setGameStatus(IS_PLAYING);
     }
-
-    if ((key === "ArrowLeft" || key === "ArrowRight") && gameStatus === IS_PLAYING) {
-      setStorkControlStatus("isUncontrolled");
-    }
   }, [gameStatus]);
 
   const handleKeyDown = useCallback(({ key }) => {
     if (key === "ArrowLeft") {
-      setStorkControlStatus("isControlled");
-
       app.ticker.addOnce(() => controlStork(LEFT));
+
+      return;
     }
 
     if (key === "ArrowRight") {
-      setStorkControlStatus("isControlled");
-
       app.ticker.addOnce(() => controlStork(RIGHT));
     }
   }, []);
