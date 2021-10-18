@@ -65,14 +65,11 @@ const RankingBox = styled.ol`
   left: 390px;
   top: 25px;
   width: 280px;
-  height: 175px;
+  height: 165px;
   padding-left: 15px;
   border: 2px solid #8f8f8f;
   border-radius: 5px;
   list-style-type: none;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
 `;
 
 const ButtonBox = styled.div`
