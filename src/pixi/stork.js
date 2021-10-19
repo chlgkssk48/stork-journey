@@ -27,14 +27,15 @@ let leftLegRadian = 0;
 let rightLegRadian = Math.PI;
 let wingRadian = 0;
 
-let animationAmount = 0;
-let animationRadian = 0.003;
+let animationRadian = 0.005;
+
+let tiltingDirection = RIGHT;
 
 let previousArrowDirection = null;
 
 let keyDownCount = 0;
 let controlAmount = 0;
-let controlRadian = 0.03;
+let controlRadian = 0;
 
 const createStork = () => {
   leftLeg.addChild(
@@ -96,9 +97,9 @@ const createStork = () => {
 };
 
 const animateStork = (setGameStatus) => {
-  leftLegRadian += 0.13;
-  rightLegRadian += 0.13;
-  wingRadian += 0.25;
+  leftLegRadian += 0.17;
+  rightLegRadian += 0.17;
+  wingRadian += 0.27;
 
   leftLeg.pivot.set(100, 190);
   leftLeg.position.set(120 + Math.cos(leftLegRadian) * 10, 190);
@@ -121,16 +122,42 @@ const animateStork = (setGameStatus) => {
   upperBody.pivot.set(120, 197);
   upperBody.position.set(120, 197);
 
-  animationAmount += head.getGlobalPosition().y * 0.0000002;
-  animationRadian += Math.pow(animationAmount, 2);
+  if (animationRadian > 0.005) {
+    animationRadian -= 0.00008;
+  }
 
-  if (upperBody.rotation >= 0 && upperBody.rotation < 1.6) {
+  if (upperBody.rotation >= -1.3 && upperBody.rotation <= 0.4) {
+    if (controlRadian > 0) {
+      animationRadian += controlRadian * 2.5;
+      controlRadian -= 0.0003;
+    }
+  } else if (upperBody.rotation > 0.4 && upperBody.rotation < 1.6) {
+    if (controlRadian < 0) {
+      tiltingDirection = RIGHT;
+    }
+
+    if (controlRadian > 0) {
+      animationRadian += controlRadian;
+      controlRadian -= 0.00008;
+    }
+  } else if (upperBody.rotation > -2.3 && upperBody.rotation < -1.3) {
+    if (controlRadian < 0) {
+      tiltingDirection = LEFT;
+    }
+
+    if (controlRadian > 0) {
+      animationRadian += controlRadian;
+      controlRadian -= 0.00008;
+    }
+  }
+
+  if (tiltingDirection === RIGHT) {
     head.rotation -= animationRadian * 2;
     legs.rotation += animationRadian;
     upperBody.rotation += animationRadian * 3;
   }
 
-  if (upperBody.rotation > -2.3 && upperBody.rotation < 0) {
+  if (tiltingDirection === LEFT) {
     head.rotation += animationRadian * 2;
     legs.rotation -= animationRadian;
     upperBody.rotation -= animationRadian * 3;
@@ -152,8 +179,8 @@ const animateStork = (setGameStatus) => {
     head.rotation = -0.6;
     head.position.set(180, 10);
 
-    legs.position.set(150, 230);
     legs.rotation = -1.8;
+    legs.position.set(150, 230);
 
     upperBody.position.set(120, 230);
 
@@ -166,28 +193,29 @@ const animateStork = (setGameStatus) => {
 };
 
 const controlStork = (arrowDirection) => {
-  if (previousArrowDirection === null) {
-    previousArrowDirection = arrowDirection;
-  }
-
-  if (previousArrowDirection === arrowDirection) {
+  if (previousArrowDirection === arrowDirection || previousArrowDirection === null) {
     keyDownCount += 1;
-    controlAmount += 0.002 * keyDownCount;
+    controlAmount += 0.0004 * keyDownCount;
     controlRadian += controlAmount;
   } else {
-    previousArrowDirection = arrowDirection;
     keyDownCount = 0;
     controlAmount = 0;
-    controlRadian = 0.03;
+    controlRadian = 0;
   }
 
+  previousArrowDirection = arrowDirection;
+
   if (arrowDirection === LEFT) {
+    tiltingDirection = LEFT;
+
     head.rotation += controlRadian * 2;
     legs.rotation -= controlRadian;
     upperBody.rotation -= controlRadian * 3;
   }
 
   if (arrowDirection === RIGHT) {
+    tiltingDirection = RIGHT;
+
     head.rotation -= controlRadian * 2;
     legs.rotation += controlRadian;
     upperBody.rotation += controlRadian * 3;
@@ -208,14 +236,13 @@ const restoreStork = () => {
   rightLegRadian = Math.PI;
   wingRadian = 0;
 
-  animationAmount = 0;
-  animationRadian = 0.003;
+  animationRadian = 0.005;
 
   previousArrowDirection = null;
 
   keyDownCount = 0;
   controlAmount = 0;
-  controlRadian = 0.03;
+  controlRadian = 0;
 };
 
 export {

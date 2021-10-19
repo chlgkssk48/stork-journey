@@ -147,7 +147,7 @@ export default function BoardContent({ canvasContainer }) {
 
     background.tilePosition.x -= MOCKUP_BACKGROUND_VARIANT;
 
-    if (Math.abs(background.tilePosition.x) % 300 === 0) {
+    if (Math.abs(background.tilePosition.x) % 250 === 0) {
       setDistance((distance) => distance + 1);
     }
   };
