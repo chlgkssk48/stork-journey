@@ -198,6 +198,7 @@ export default function BoardContent({ canvasContainer }) {
 
       app.stage.addChild(newStork);
 
+      setDistance(0);
       setGameStatus(IS_READY);
 
       return;

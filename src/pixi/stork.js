@@ -193,6 +193,10 @@ const animateStork = (setGameStatus) => {
 };
 
 const controlStork = (arrowDirection) => {
+  if (keyDownCount >= 5) {
+    return;
+  }
+
   if (previousArrowDirection === arrowDirection || previousArrowDirection === null) {
     keyDownCount += 1;
     controlAmount += 0.0004 * keyDownCount;
