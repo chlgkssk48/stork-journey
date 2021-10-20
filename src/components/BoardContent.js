@@ -146,6 +146,7 @@ export default function BoardContent({ canvasContainer }) {
   const [storkName, setStorkName] = useState(null);
   const [stork, setStork] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [rankingList, setRankingList] = useState(null);
 
   const update = () => {
@@ -176,7 +177,7 @@ export default function BoardContent({ canvasContainer }) {
         return;
       }
 
-      backgroundMusic.play();
+      drumSound.play();
 
       const stork = createStork();
 
@@ -213,6 +214,7 @@ export default function BoardContent({ canvasContainer }) {
 
       setStork(newStork);
       setDistance(0);
+      setIsRetrying(true);
       setGameStatus(IS_READY);
 
       return;
@@ -233,6 +235,8 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (key === " " && gameStatus === IS_READY) {
+      backgroundMusic.play();
+
       setGameStatus(IS_PLAYING);
     }
   }, [gameStatus]);
@@ -259,11 +263,25 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (gameStatus === IS_READY) {
-      document.body.addEventListener("keyup", handleKeyUp);
+      if (isRetrying) {
+        document.body.addEventListener("keyup", handleKeyUp);
 
-      app.renderer.render(app.stage);
+        app.renderer.render(app.stage);
+      } else {
+        setTimeout(() => {
+          document.body.addEventListener("keyup", handleKeyUp);
 
-      return () => document.body.removeEventListener("keyup", handleKeyUp);
+          app.renderer.render(app.stage);
+
+          appearanceSound.play();
+        }, 3000);
+      }
+
+      return () => {
+        setIsRetrying(false);
+
+        document.body.removeEventListener("keyup", handleKeyUp);
+      };
     }
 
     if (gameStatus === IS_PLAYING) {
@@ -292,7 +310,7 @@ export default function BoardContent({ canvasContainer }) {
 
       app.ticker.stop();
     }
-  }, [gameStatus, handleKeyUp, handleKeyDown, storkName, distance]);
+  }, [gameStatus, handleKeyUp, isRetrying, handleKeyDown, storkName, distance]);
 
   return (
     <ContentContainer>
