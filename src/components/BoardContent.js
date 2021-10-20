@@ -95,6 +95,11 @@ const StyledButton = styled(Button)`
   margin: 0px 0px 10px 0px;
 `;
 
+const backgroundMusic = document.getElementById("background-music");
+const drumSound = document.getElementById("drum-sound");
+const appearanceSound = document.getElementById("appearance-sound");
+const duckSound = document.getElementById("duck-sound");
+
 const app = new PIXI.Application({
   width: SCREEN_WIDTH,
   height: SCREEN_HEIGHT,
@@ -170,6 +175,8 @@ export default function BoardContent({ canvasContainer }) {
         return;
       }
 
+      backgroundMusic.play();
+
       const stork = createStork();
 
       stork.position.x = app.screen.width * 0.37;
@@ -191,6 +198,8 @@ export default function BoardContent({ canvasContainer }) {
     restoreStork();
 
     if (name === TRY_AGAIN) {
+      backgroundMusic.play();
+
       const newStork = createStork();
 
       newStork.position.x = app.screen.width * 0.37;
@@ -272,6 +281,9 @@ export default function BoardContent({ canvasContainer }) {
 
         setRankingList(rankingList);
       })();
+
+      backgroundMusic.pause();
+      duckSound.play();
 
       app.ticker.stop();
     }
