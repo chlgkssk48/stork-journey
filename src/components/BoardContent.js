@@ -10,14 +10,14 @@ import Button from "./common/Button";
 
 import createBackground from "../pixi/createBackground";
 
-import firebaseApp from "../config/firebase";
-
 import {
   createStork,
   animateStork,
   controlStork,
   restoreStork,
 } from "../pixi/stork";
+
+import firebaseApp from "../config/firebase";
 
 import {
   SCREEN_WIDTH,
@@ -144,6 +144,7 @@ const getRankingListSortedByDistance = async () => {
 export default function BoardContent({ canvasContainer }) {
   const [gameStatus, setGameStatus] = useState(IS_WAITING);
   const [storkName, setStorkName] = useState(null);
+  const [stork, setStork] = useState(null);
   const [distance, setDistance] = useState(null);
   const [rankingList, setRankingList] = useState(null);
 
@@ -166,7 +167,7 @@ export default function BoardContent({ canvasContainer }) {
       app.ticker.add(update);
 
       app.ticker.stop();
-    }, 1000);
+    }, 100);
   }, [canvasContainer]);
 
   const handleButtonClick = useCallback(({ name }) => {
@@ -186,12 +187,15 @@ export default function BoardContent({ canvasContainer }) {
 
       localStorage.setItem("storkName", storkName);
 
+      setStork(stork);
       setGameStatus(IS_READY);
 
       return;
     }
 
-    app.stage.removeChildAt(1);
+    app.stage.removeChild(stork);
+
+    setStork(null);
 
     app.renderer.render(app.stage);
 
@@ -207,6 +211,7 @@ export default function BoardContent({ canvasContainer }) {
 
       app.stage.addChild(newStork);
 
+      setStork(newStork);
       setDistance(0);
       setGameStatus(IS_READY);
 
@@ -216,7 +221,7 @@ export default function BoardContent({ canvasContainer }) {
     if (name === QUIT) {
       setGameStatus(IS_WAITING);
     }
-  }, [storkName]);
+  }, [storkName, stork]);
 
   const handleKeyUp = useCallback(({ key }) => {
     if (key === "Enter" && gameStatus === IS_WAITING) {
