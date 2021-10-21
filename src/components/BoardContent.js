@@ -26,7 +26,13 @@ import {
   MOCKUP_BACKGROUND_VARIANT,
 } from "../constants/figures";
 
-import { MOCKUP_BACKGROUND_SOURCE } from "../constants/sources";
+import {
+  MOCKUP_BACKGROUND_SOURCE,
+  BACKGROUND_MUSIC_SOURCE,
+  DRUM_SOUND_SOURCE,
+  APPEARANCE_SOUND_SOURCE,
+  DUCK_SOUND_SOURCE,
+} from "../constants/sources";
 
 import {
   IS_WAITING,
@@ -79,6 +85,12 @@ const ButtonBox = styled.div`
   top: 40px;
 `;
 
+const Loading = styled.p`
+  margin-top: 290px;
+  text-align: center;
+  font-size: 25px;
+`;
+
 const Distance = styled.p`
   margin-top: 40px;
   padding-left: ${({ gameStatus }) => gameStatus === IS_PLAYING ? "45px" : "50px"};
@@ -95,10 +107,11 @@ const StyledButton = styled(Button)`
   margin: 0px 0px 10px 0px;
 `;
 
-const backgroundMusic = document.getElementById("background-music");
-const drumSound = document.getElementById("drum-sound");
-const appearanceSound = document.getElementById("appearance-sound");
-const duckSound = document.getElementById("duck-sound");
+let background = null;
+let backgroundMusic = null;
+let drumSound = null;
+let appearanceSound = null;
+let duckSound = null;
 
 const app = new PIXI.Application({
   width: SCREEN_WIDTH,
@@ -106,13 +119,6 @@ const app = new PIXI.Application({
   antialias: true,
   backgroundAlpha: 0,
 });
-
-const background = createBackground(
-  MOCKUP_BACKGROUND_SOURCE,
-  SCREEN_WIDTH,
-  SCREEN_HEIGHT,
-  MOCKUP_BACKGROUND_SCALE,
-);
 
 const writeStorkData = async (name, distance) => {
   const database = getDatabase(firebaseApp, process.env.REACT_APP_REALTIME_DATABASE_URL);
@@ -148,6 +154,7 @@ export default function BoardContent({ canvasContainer }) {
   const [distance, setDistance] = useState(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [rankingList, setRankingList] = useState(null);
+  const [progress, setProgress] = useState(null);
 
   const update = () => {
     animateStork(setGameStatus);
@@ -160,9 +167,37 @@ export default function BoardContent({ canvasContainer }) {
   };
 
   const setup = useCallback(() => {
-    app.stage.addChild(background);
+    const loader = PIXI.Loader.shared;
 
-    canvasContainer.current.appendChild(app.view);
+    loader
+      .add("background", MOCKUP_BACKGROUND_SOURCE)
+      .add("backgroundMusic", BACKGROUND_MUSIC_SOURCE)
+      .add("drumSound", DRUM_SOUND_SOURCE)
+      .add("appearanceSound", APPEARANCE_SOUND_SOURCE)
+      .add("duckSound", DUCK_SOUND_SOURCE)
+      .load((loader, resources) => {
+        background = createBackground(
+          resources.background.data,
+          SCREEN_WIDTH,
+          SCREEN_HEIGHT,
+          MOCKUP_BACKGROUND_SCALE,
+        );
+
+        backgroundMusic = resources.backgroundMusic.data;
+        drumSound = resources.drumSound.data;
+        appearanceSound = resources.appearanceSound.data;
+        duckSound = resources.duckSound.data;
+
+        app.stage.addChild(background);
+
+        app.renderer.render(app.stage);
+
+        canvasContainer.current.appendChild(app.view);
+      });
+
+    loader.onProgress.add(() => {
+      setProgress(loader.progress);
+    });
 
     setTimeout(() => {
       app.ticker.add(update);
@@ -314,54 +349,60 @@ export default function BoardContent({ canvasContainer }) {
 
   return (
     <ContentContainer>
-      {gameStatus === IS_WAITING && (
-        <PreparationContent>
-          <Message gameStatus={gameStatus} />
-          <NameInput
-            onType={setStorkName}
-            onKeyUp={handleKeyUp}
-          />
-          <Button
-            buttonName={READY}
-            onClick={handleButtonClick}
-            className={READY}
-          />
-        </PreparationContent>
-      )}
-      {gameStatus === IS_READY && (
-        <PreparationContent>
-          <Message gameStatus={gameStatus} />
-        </PreparationContent>
-      )}
-      {gameStatus === IS_PLAYING && (
-        <Distance
-          gameStatus={gameStatus}
-        >
-          {distance} m
-        </Distance>
-      )}
-      {gameStatus === IS_OVER && (
+      {progress < 100 ? (
+        <Loading>로딩 중입니다.<br />잠시만 기다려 주세요!<br />({progress} / 100)</Loading>
+      ) : (
         <>
-          <Distance
-            gameStatus={gameStatus}
-          >
-            {distance} m
-          </Distance>
-          <RankingBox>
-            {rankingList && rankingList.map((data, index) => (
-              <List key={index}>{`${index + 1}위 : ${data.name}, ${data.distance} m`}</List>
-            ))}
-          </RankingBox>
-          <ButtonBox>
-            <StyledButton
-              buttonName={TRY_AGAIN}
-              onClick={handleButtonClick}
-            />
-            <StyledButton
-              buttonName={QUIT}
-              onClick={handleButtonClick}
-            />
-          </ButtonBox>
+          {gameStatus === IS_WAITING && (
+            <PreparationContent>
+              <Message gameStatus={gameStatus} />
+              <NameInput
+                onType={setStorkName}
+                onKeyUp={handleKeyUp}
+              />
+              <Button
+                buttonName={READY}
+                onClick={handleButtonClick}
+                className={READY}
+              />
+            </PreparationContent>
+          )}
+          {gameStatus === IS_READY && (
+            <PreparationContent>
+              <Message gameStatus={gameStatus} />
+            </PreparationContent>
+          )}
+          {gameStatus === IS_PLAYING && (
+            <Distance
+              gameStatus={gameStatus}
+            >
+              {distance} m
+            </Distance>
+          )}
+          {gameStatus === IS_OVER && (
+            <>
+              <Distance
+                gameStatus={gameStatus}
+              >
+                {distance} m
+              </Distance>
+              <RankingBox>
+                {rankingList && rankingList.map((data, index) => (
+                  <List key={index}>{`${index + 1}위 : ${data.name}, ${data.distance} m`}</List>
+                ))}
+              </RankingBox>
+              <ButtonBox>
+                <StyledButton
+                  buttonName={TRY_AGAIN}
+                  onClick={handleButtonClick}
+                />
+                <StyledButton
+                  buttonName={QUIT}
+                  onClick={handleButtonClick}
+                />
+              </ButtonBox>
+            </>
+          )}
         </>
       )}
     </ContentContainer>
