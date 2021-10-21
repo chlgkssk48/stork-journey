@@ -154,7 +154,7 @@ export default function BoardContent({ canvasContainer }) {
   const [distance, setDistance] = useState(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [rankingList, setRankingList] = useState(null);
-  const [progress, setProgress] = useState(null);
+  const [progress, setProgress] = useState(0);
 
   const update = () => {
     animateStork(setGameStatus);
