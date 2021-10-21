@@ -31,6 +31,7 @@ export default function NameInput({ onType, onKeyUp }) {
       placeholder="황새의 이름을 입력해 주세요!"
       onChange={handleNameInput}
       onKeyUp={(event) => handleKeyUp(event)}
+      maxLength={10}
     />
   );
 }

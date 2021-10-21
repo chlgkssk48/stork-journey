@@ -256,6 +256,8 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (name === QUIT) {
+      localStorage.removeItem("storkName");
+
       setGameStatus(IS_WAITING);
     }
   }, [storkName, stork]);
