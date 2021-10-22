@@ -272,6 +272,7 @@ export default function BoardContent({ canvasContainer }) {
     }
 
     if (key === " " && gameStatus === IS_READY) {
+      backgroundMusic.loop = true;
       backgroundMusic.play();
 
       setGameStatus(IS_PLAYING);
