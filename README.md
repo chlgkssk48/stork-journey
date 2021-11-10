@@ -89,17 +89,15 @@
 
 ### **황새 캐릭터 생성 & 요소 분리**
 
-<img src="readme_assets/stork_01.png" width="200px" height="200px">
-<img src="readme_assets/stork_02.png" width="200px" height="200px">
-<img src="readme_assets/stork_03.png" width="200px" height="200px">
-<img src="readme_assets/walking_stork_01.gif" width="250px" height="200px">
+<p align="center"><img src="readme_assets/stork.png" width="600px" height="200px"></p>
+<p align="center"><img src="readme_assets/walking_stork_01.gif" width="250px" height="200px"></p>
 
 처음에는 png 파일을 로딩하여 하나의 PIXI.Sprite 객체를 생성함으로써 **정적**인 황새 캐릭터를 만들었습니다. 그리고 황새가 걸어가는 **동적**인 애니메이션 효과를 구현하기 위해 교차된 다리 모양을 갖는 PIXI.Sprite 객체를 추가로 생성하여 기존의 것과 교대로 렌더링하였습니다.
 
 그런데 하나의 PIXI.Sprite 객체는 **회전축을 1개만 갖기 때문**에 rotation 효과 적용 시 황새가 통째로 회전되어 휘청거리는 움직임을 자연스럽게 구현할 수 없다는 문제가 발생하였고, 이를 해결하기 위해 황새의 머리, 몸통, 다리 요소를 분리하기로 결정했습니다.
 
-<img src="readme_assets/stork_spritesheet.png" width="1000px" height="200px">
-<img src="readme_assets/walking_stork_02.gif" width="250px" height="200px">
+<p align="center"><img src="readme_assets/stork_spritesheet.png" width="1000px" height="200px"></p>
+<p align="center"><img src="readme_assets/walking_stork_02.gif" width="300px" height="250px"></p>
 
 **황새의 머리, 몸통, 다리 요소를 분리**함으로써 **회전축의 개수를 3개로 늘렸고**, 황새가 걸어가는 움직임을 더 부드럽게 표현하기 위해 교차되는 다리의 모양을 다섯 종류로 늘리자 총 7개의 png 파일이 생성되었습니다. 이후 TexturePacker tool을 사용하여 7개의 png 파일을 하나로 packing하였고(93KB → 60KB), 애니메이션 정보를 담은 JSON data 파일을 통해 PIXI.AnimatedSprite 객체를 생성함으로써 황새가 자연스럽게 걷는 움직임을 구현했습니다.
 
@@ -107,7 +105,7 @@
 
 우선 캔버스로 머리, 몸통, 날개, 왼쪽 다리, 오른쪽 다리 요소를 각각 드로잉함으로써 **5개의 회전축이 생성**되었고, PIXI.Container를 사용하여 머리, 몸통, 날개를 하나의 객체로, 왼쪽 다리와 오른쪽 다리를 하나의 객체로 묶음으로써 **2개의 회전축이 추가로 생성**되었습니다. 이렇게 생성된 **총 7개의 회전축을 컨트롤**함으로써 최종적으로 황새의 부드러운 움직임을 구현할 수 있게 되었습니다.
 
-<img src="readme_assets/walking_stork_03.gif" width="350px" height="250px">
+<p align="center"><img src="readme_assets/walking_stork_03.gif" width="350px" height="250px"></p>
 
 ---
 
@@ -136,21 +134,21 @@
 
 ### 게임 준비 및 시작
 
-<img src="readme_assets/game_ready.gif" width="710px" height="450px">
+<p align="center"><img src="readme_assets/game_ready.gif" width="710px" height="450px"></p>
 
 - 황새의 이름을 입력한 후 준비 버튼을 클릭하거나 엔터키를 누르면 게임 준비가 완료되고, 잠시 후 황새가 등장합니다.
 - 황새가 등장한 후 스페이스바를 누르면 게임이 시작됩니다.
 
 ### 게임 진행
 
-<img src="readme_assets/game_playing.gif" width="710px" height="450px">
+<p align="center"><img src="readme_assets/game_playing.gif" width="710px" height="450px"></p>
 
 - 황새가 기울어지는 방향의 반대쪽 방향키를 눌러 황새가 쓰러지지 않도록 조작합니다.
 - 게임 보드의 왼쪽 상단에 황새가 걸어간 거리가 표시됩니다.
 
 ### 게임 종료
 
-<img src="readme_assets/game_over.gif" width="710px" height="450px">
+<p align="center"><img src="readme_assets/game_over.gif" width="710px" height="450px"></p>
 
 - 황새가 쓰러지면 게임이 종료됩니다.
 - 게임 보드의 왼쪽 상단에는 최종 거리가, 중앙 상단에는 상위 5위까지의 랭킹이, 오른쪽 상단에는 게임을 다시 시작할 수 있는 버튼이 표시됩니다.
